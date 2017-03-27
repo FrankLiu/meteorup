@@ -11,6 +11,7 @@ set -e
 APPNAME=<%= appName %>
 
 LOGFILE=`pm2 show $APPNAME|grep 'out log path'|awk '{print $6}'`
+ERRLOGFILE=`pm2 show $APPNAME|grep 'error log path'|awk '{print $6}'`
 
 FLUSH=<%= flush %>
 
@@ -20,11 +21,7 @@ if [ "$LOGFILE"x == ""x ];then
 fi
 
 if [ $FLUSH ];then
-  echo "tail -f $LOGFILE"
-  tail -f "$LOGFILE"
+	pm2 logs -f $APPNAME
 else
-  echo "tail -n 50 "$LOGFILE
-  echo ""
-  tail -n 50 "$LOGFILE"
-  echo ""
+  pm2 logs $APPNAME --lines 50 --nostream
 fi
